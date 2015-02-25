@@ -1,0 +1,19 @@
+django-kvstore 1.0
+==================
+
+This package provides a postgres backend.
+
+Other backends are available upstream but are not
+actively maintained, including:
+
+googleappengine (Google AppEngine data store)
+sdb (Amazon SimpleDB)
+tokyotyrant (Tokyo Tyrant)
+redis (Redis)
+
+Some non-persistent stores are also provided,
+mainly for testing purposes:
+
+locmem
+memcached
+

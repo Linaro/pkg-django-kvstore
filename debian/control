@@ -1,0 +1,25 @@
+Source: django-kvstore
+Maintainer: Debian LAVA team <pkg-linaro-lava-devel@lists.alioth.debian.org>
+Uploaders: Neil Williams <codehelp@debian.org>,
+ Fathi Boudra <fabo@debian.org>, Jordi Mallach <jordi@debian.org>
+Section: python
+Priority: optional
+Build-Depends: debhelper (>= 9), dh-python,
+ python | python-all (>= 2.6.6-3) | python-dev | python-all-dev,
+ python-setuptools (>= 0.6b3)
+X-Python-Version: 2.7
+Standards-Version: 3.9.6
+
+Package: python-django-kvstore
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}
+Description: Extensible key-value store backend for Django
+ This module provides an abstraction layer for accessing a
+ key-value storage within a Django application using
+ Postgresql.
+ .
+ A dedicated table needs to be created and then this table
+ can be specified as the KEY_VALUE_STORE_BACKEND. Only
+ primary key lookup queries are supported but the dictionary
+ returned can be processed as normal.
+

@@ -1,0 +1,6 @@
+django-kvstore (1.0-1) unstable; urgency=low
+
+  * Initial release. (Closes: #779189: ITP: django-kvstore -- Extensible
+    key-value store backend for Django)
+
+ -- Neil Williams <codehelp@debian.org>  Tue, 24 Feb 2015 11:48:39 +0000
