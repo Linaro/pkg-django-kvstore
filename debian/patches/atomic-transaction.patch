@@ -1,0 +1,86 @@
+Description: Implement atomic transaction support
+ Starting in django1.6 and required for django1.8,
+ use atomic transactions instead of the deprecated
+ unless_managed. Specify django1.6 in setup.py.
+
+Author: Neil Williams <codehelp@debian.org>
+Origin: https://github.com/Linaro/django-kvstore/commit/a99ab981d3d6c0e5160c09d047d4a233589728e2
+Forwarded: upstream, https://github.com/saymedia/django-kvstore/commit/a99ab981d3d6c0e5160c09d047d4a233589728e2
+Bug: https://github.com/saymedia/django-kvstore/pull/1
+Reviewed-By: Brad Choate <brad@bradchoate.com>
+---
+
+--- django-kvstore-1.0.orig/django_kvstore/backends/db.py
++++ django-kvstore-1.0/django_kvstore/backends/db.py
+@@ -15,17 +15,22 @@ table name Django uses is the same table
+ """
+ 
+ import base64
++import logging
+ from django_kvstore.backends.base import BaseStorage
+ from django.db import connection, transaction, DatabaseError
++from django.db.utils import IntegrityError
++
+ try:
+     import cPickle as pickle
+ except ImportError:
+     import pickle
+ 
++
+ class StorageClass(BaseStorage):
+     def __init__(self, table, params):
+         BaseStorage.__init__(self, params)
+         self._table = table
++        self.logger = logging.getLogger(__name__)
+ 
+     def get(self, key):
+         cursor = connection.cursor()
+@@ -37,24 +42,25 @@ class StorageClass(BaseStorage):
+ 
+     def set(self, key, value):
+         encoded = base64.encodestring(pickle.dumps(value, 2)).strip()
+-        cursor = connection.cursor()
+-        cursor.execute("SELECT kee FROM %s WHERE kee = %%s" % self._table, [key])
++        # report database errors after the atomic transaction has rolled back
+         try:
+-            if cursor.fetchone():
+-                cursor.execute("UPDATE %s SET value = %%s WHERE kee = %%s" % self._table, [encoded, key])
+-            else:
+-                cursor.execute("INSERT INTO %s (kee, value) VALUES (%%s, %%s)" % self._table, [key, encoded])
+-        except DatabaseError, e:
+-            # To be threadsafe, updates/inserts are allowed to fail silently
++            with transaction.atomic():
++                cursor = connection.cursor()
++                cursor.execute("SELECT kee FROM %s WHERE kee = %%s" % self._table, [key])
++                if cursor.fetchone():
++                    cursor.execute("UPDATE %s SET value = %%s WHERE kee = %%s" % self._table, [encoded, key])
++                else:
++                    cursor.execute("INSERT INTO %s (kee, value) VALUES (%%s, %%s)" % self._table, [key, encoded])
++        except (DatabaseError, IntegrityError):
++            # Report the atomic failure
++            self.logger.info("set operation for %s failed and has been rolled back", key)
+             return False
+-        else:
+-            transaction.commit_unless_managed()
+-            return True
++        return True
+ 
++    @transaction.atomic()
+     def delete(self, key):
+         cursor = connection.cursor()
+         cursor.execute("DELETE FROM %s WHERE kee = %%s" % self._table, [key])
+-        transaction.commit_unless_managed()
+ 
+     def has_key(self, key):
+         cursor = connection.cursor()
+--- django-kvstore-1.0.orig/setup.py
++++ django-kvstore-1.0/setup.py
+@@ -63,6 +63,6 @@ setup(
+     provides=['django_kvstore'],
+     include_package_data=True,
+     zip_safe=True,
+-    requires=['Django(>=1.1.1)'],
+-    install_requires=['Django>=1.1.1'],
++    requires=['Django(>=1.6)'],
++    install_requires=['Django>=1.6'],
+ )
