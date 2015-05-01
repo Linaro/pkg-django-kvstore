@@ -1,3 +1,9 @@
+django-kvstore (1.0-2) unstable; urgency=medium
+
+  * Migrate to unstable for stretch support
+
+ -- Neil Williams <codehelp@debian.org>  Fri, 01 May 2015 16:12:18 +0100
+
 django-kvstore (1.0-1) experimental; urgency=low
 
   * Initial release. (Closes: #779189: ITP: django-kvstore -- Extensible

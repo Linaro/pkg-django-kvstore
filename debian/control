@@ -9,6 +9,7 @@ Build-Depends: debhelper (>= 9), dh-python,
  python-setuptools (>= 0.6b3)
 X-Python-Version: 2.7
 Standards-Version: 3.9.6
+Homepage: https://github.com/saymedia/django-kvstore
 Vcs-Git: https://github.com/Linaro/pkg-django-kvstore.git
 Vcs-Browser: https://github.com/Linaro/pkg-django-kvstore
 
@@ -19,7 +20,7 @@ Recommends: python-psycopg2
 Description: Extensible key-value store backend for Django
  This module provides an abstraction layer for accessing a
  key-value storage within a Django application using
- Postgresql.
+ PostgreSQL.
  .
  A dedicated table needs to be created and then this table
  can be specified as the KEY_VALUE_STORE_BACKEND. Only
