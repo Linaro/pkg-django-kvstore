@@ -1,3 +1,11 @@
+django-kvstore (1.1-1) unstable; urgency=medium
+
+  * New upstream release
+  * Add python3 support
+  * Drop previous patches now included upstream
+
+ -- Neil Williams <codehelp@debian.org>  Sat, 27 Aug 2016 13:25:14 +0100
+
 django-kvstore (1.0-3) unstable; urgency=medium
 
   * Add Senthil Kumaran S (stylesen) as an uploader.
